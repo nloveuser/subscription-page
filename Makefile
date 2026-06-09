@@ -1,11 +1,12 @@
 # Makefile for version bumping and dependency installation
 
-.PHONY: bump-patch bump-minor bump-major install help tag-release deploy up down logs
+.PHONY: bump-patch bump-minor bump-major install help tag-release init deploy up down logs
 
 # Default target
 help:
 	@echo "Available targets:"
 	@echo ""
+	@echo "  init        - Create .env and auto-generate all secrets (run first)"
 	@echo "  deploy      - Pull latest image and start/restart production service"
 	@echo "  up          - Build and start the full dev stack"
 	@echo "  down        - Stop all containers"
@@ -18,6 +19,10 @@ help:
 	@echo "  tag-release - Create and push git tag for current version"
 
 # ── Deploy ──────────────────────────────────────────────────────────────────
+
+# Create .env and auto-generate all secrets
+init:
+	@./deploy.sh init
 
 # Pull latest image and start/restart production container
 deploy:
