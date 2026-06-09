@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-primary-color="<%- themePrimaryColor %>">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="robots" content="noindex, nofollow" />
+        <meta name="color-scheme" content="dark only" />
+        <meta name="theme-color" content="<%- themeBgColor %>" />
+        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no" />
+        <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+        <link rel="icon" sizes="32x32" type="image/png" href="/assets/favicon-32x32.png" />
+        <link rel="icon" sizes="16x16" type="image/png" href="/assets/favicon-16x16.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180x180.png" />
+        <title><%- brandName %></title>
+        <style id="rwsp-theme-vars"><%- themeStyles %></style>
+        <style>
+            *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+            body {
+                background: var(--rwsp-bg, #161b23);
+                color: #fff;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background:
+                    radial-gradient(ellipse at 15% 50%, var(--rwsp-accent-l, rgba(139,92,246,.08)) 0%, transparent 60%),
+                    radial-gradient(ellipse at 85% 20%, var(--rwsp-accent-r, rgba(6,182,212,.06)) 0%, transparent 60%);
+                pointer-events: none;
+                z-index: 0;
+            }
+
+            .card {
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                padding: 3rem 2.5rem;
+                background: rgba(255,255,255,0.04);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 1.25rem;
+                max-width: 440px;
+                width: calc(100% - 2rem);
+                backdrop-filter: blur(16px);
+                -webkit-backdrop-filter: blur(16px);
+            }
+
+            .icon-wrap {
+                width: 64px;
+                height: 64px;
+                margin: 0 auto 1.75rem;
+                background: rgba(6,182,212,0.1);
+                border: 1px solid rgba(6,182,212,0.2);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .icon-wrap svg {
+                width: 30px;
+                height: 30px;
+            }
+
+            h1 {
+                font-size: 1.875rem;
+                font-weight: 700;
+                color: #06b6d4;
+                margin-bottom: 0.75rem;
+                letter-spacing: -0.025em;
+            }
+
+            p {
+                color: rgba(255,255,255,0.5);
+                font-size: 0.9375rem;
+                line-height: 1.65;
+                margin-bottom: 2rem;
+            }
+
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                background: rgba(34,197,94,0.08);
+                color: #4ade80;
+                border: 1px solid rgba(34,197,94,0.2);
+                padding: 0.4rem 1.1rem;
+                border-radius: 9999px;
+                font-size: 0.8125rem;
+                font-weight: 500;
+                letter-spacing: 0.04em;
+                text-transform: uppercase;
+            }
+
+            .dot {
+                width: 7px;
+                height: 7px;
+                border-radius: 50%;
+                background: #4ade80;
+                flex-shrink: 0;
+                animation: blink 2s ease-in-out infinite;
+            }
+
+            @keyframes blink {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.3; }
+            }
+
+            .footer {
+                position: fixed;
+                bottom: 1.5rem;
+                color: rgba(255,255,255,0.18);
+                font-size: 0.75rem;
+                letter-spacing: 0.02em;
+                z-index: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="icon-wrap">
+                <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 15 Q8.5 8 15 15 Q21.5 22 27 15" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                    <path d="M3 9 Q8.5 2 15 9 Q21.5 16 27 9" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.35"/>
+                    <path d="M3 21 Q8.5 14 15 21 Q21.5 28 27 21" stroke="#06b6d4" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.35"/>
+                </svg>
+            </div>
+            <h1><%- brandName %></h1>
+            <p>Open your personal subscription link to view connection details and setup guides for your devices.</p>
+            <div class="badge">
+                <span class="dot"></span>
+                Service online
+            </div>
+        </div>
+        <div class="footer">Remnawave Subscription Page</div>
+    </body>
+</html>

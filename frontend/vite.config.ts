@@ -1,6 +1,3 @@
-// import obfuscatorPlugin from 'vite-plugin-javascript-obfuscator'
-// import { visualizer } from 'rollup-plugin-visualizer'
-// import deadFile from 'vite-plugin-deadfile'
 import removeConsole from 'vite-plugin-remove-console'
 import webfontDownload from 'vite-plugin-webfont-dl'
 import tsconfigPaths from 'vite-tsconfig-paths'
@@ -32,42 +29,6 @@ export default defineConfig({
                 metaTitle: process.env.META_TITLE
             }
         })
-        // obfuscatorPlugin({
-        //     exclude: [/node_modules/, /app.tsx/],
-        //     apply: 'build',
-        //     debugger: false,
-        //     options: {
-        //         compact: true,
-        //         controlFlowFlattening: false,
-        //         deadCodeInjection: false,
-        //         debugProtection: true,
-        //         debugProtectionInterval: 0,
-        //         domainLock: [],
-        //         disableConsoleOutput: true,
-        //         identifierNamesGenerator: 'hexadecimal',
-        //         log: false,
-        //         numbersToExpressions: false,
-        //         renameGlobals: false,
-        //         selfDefending: false,
-        //         simplify: true,
-        //         splitStrings: false,
-        //         stringArray: true,
-        //         stringArrayCallsTransform: false,
-        //         stringArrayCallsTransformThreshold: 0.5,
-        //         stringArrayEncoding: [],
-        //         stringArrayIndexShift: true,
-        //         stringArrayRotate: true,
-        //         stringArrayShuffle: true,
-        //         stringArrayWrappersCount: 1,
-        //         stringArrayWrappersChainedCalls: true,
-        //         stringArrayWrappersParametersMaxCount: 2,
-        //         stringArrayWrappersType: 'variable',
-        //         stringArrayThreshold: 0.75,
-        //         unicodeEscapeSequence: false
-        //         // ...  [See more options](https://github.com/javascript-obfuscator/javascript-obfuscator)
-        //     }
-        // })
-        // visualizer()
     ],
     optimizeDeps: {
         include: ['html-parse-stringify']

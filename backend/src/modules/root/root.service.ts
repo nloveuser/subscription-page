@@ -48,6 +48,31 @@ export class RootService {
         }
     }
 
+    public async serveHomepage(req: Request, res: Response): Promise<void> {
+        const host = (req.headers['host'] as string | undefined)?.split(':')[0] ?? '';
+        const domainConfig = this.domainsConfigService.getForHost(host);
+
+        const brandName =
+            domainConfig?.brand?.name ||
+            this.configService.get<string>('BRAND_NAME') ||
+            'Remnawave';
+
+        const { accentL, accentR } = this.generateThemeAccentValues(domainConfig);
+        const bgColor =
+            domainConfig?.theme?.bgColor ||
+            this.configService.get<string>('THEME_BG_COLOR') ||
+            '#161b23';
+
+        res.render('home', {
+            brandName,
+            themeStyles: this.generateThemeStyles(domainConfig),
+            themePrimaryColor: this.getThemePrimaryColor(domainConfig),
+            themeBgColor: bgColor,
+            themeAccentL: accentL,
+            themeAccentR: accentR,
+        });
+    }
+
     public async serveSubscriptionPage(
         clientIp: string,
         req: Request,

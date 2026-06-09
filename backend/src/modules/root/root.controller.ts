@@ -27,6 +27,11 @@ export class RootController {
         private readonly configService: ConfigService,
     ) {}
 
+    @Get('')
+    async homepage(@Req() request: Request, @Res() response: Response) {
+        return await this.rootService.serveHomepage(request, response);
+    }
+
     @Get(APP_CONFIG_ROUTE_WO_LEADING_PATH)
     async getSubscriptionPageConfig(@GetJWTPayload() user: IJwtPayload, @Req() request: Request) {
         return await this.subpageConfigService.getSubscriptionPageConfig(user.su, request);

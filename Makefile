@@ -1,18 +1,39 @@
 # Makefile for version bumping and dependency installation
 
-.PHONY: bump-patch bump-minor bump-major install help tag-release
+.PHONY: bump-patch bump-minor bump-major install help tag-release deploy up down logs
 
 # Default target
 help:
 	@echo "Available targets:"
+	@echo ""
+	@echo "  deploy      - Pull latest image and start/restart production service"
+	@echo "  up          - Build and start the full dev stack"
+	@echo "  down        - Stop all containers"
+	@echo "  logs        - Follow container logs"
+	@echo ""
 	@echo "  bump-patch  - Bump patch version (x.x.X) for both backend and frontend"
 	@echo "  bump-minor  - Bump minor version (x.X.x) for both backend and frontend"
 	@echo "  bump-major  - Bump major version (X.x.x) for both backend and frontend"
 	@echo "  install     - Run npm install in both backend and frontend directories"
-	@echo "  bump-and-install-patch  - Bump patch version and install dependencies"
-	@echo "  bump-and-install-minor  - Bump minor version and install dependencies"
-	@echo "  bump-and-install-major  - Bump major version and install dependencies"
 	@echo "  tag-release - Create and push git tag for current version"
+
+# ── Deploy ──────────────────────────────────────────────────────────────────
+
+# Pull latest image and start/restart production container
+deploy:
+	@./deploy.sh
+
+# Build and start the full dev stack (MySQL + Go API + Angie + NestJS)
+up:
+	@./deploy.sh full
+
+# Stop all running containers
+down:
+	@./deploy.sh down
+
+# Follow logs
+logs:
+	@./deploy.sh logs
 
 # Bump patch version (x.x.X)
 bump-patch:

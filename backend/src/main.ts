@@ -26,16 +26,6 @@ import { getRealIp } from '@common/middlewares/get-real-ip';
 
 import { AppModule } from './app.module';
 
-// const levels = {
-//     error: 0,
-//     warn: 1,
-//     info: 2,
-//     http: 3,
-//     verbose: 4,
-//     debug: 5,
-//     silly: 6,
-// };
-
 const instanceId = process.env.INSTANCE_ID || '0';
 
 const logger = createLogger({
