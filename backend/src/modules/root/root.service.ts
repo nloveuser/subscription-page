@@ -11,7 +11,9 @@ import { TRequestTemplateTypeKeys } from '@remnawave/backend-contract';
 
 import { AxiosService } from '@common/axios/axios.service';
 import { IGNORED_HEADERS } from '@common/constants';
-import { sanitizeUsername } from '@common/utils';
+import { IDomainConfig } from '@common/domains/domain-config.interface';
+import { DomainsConfigService } from '@common/domains/domains-config.service';
+import { colorToRgb, sanitizeUsername, VALID_MANTINE_COLORS } from '@common/utils';
 
 import { SubpageConfigService } from './subpage-config.service';
 
@@ -22,11 +24,13 @@ export class RootService {
     private readonly isMarzbanLegacyLinkEnabled: boolean;
     private readonly marzbanSecretKeys: string[];
     private readonly mlDropRevokedSubscriptions: boolean;
+
     constructor(
         private readonly configService: ConfigService,
         private readonly jwtService: JwtService,
         private readonly axiosService: AxiosService,
         private readonly subpageConfigService: SubpageConfigService,
+        private readonly domainsConfigService: DomainsConfigService,
     ) {
         this.isMarzbanLegacyLinkEnabled = this.configService.getOrThrow<boolean>(
             'MARZBAN_LEGACY_LINK_ENABLED',
@@ -129,6 +133,59 @@ export class RootService {
         }
     }
 
+    private generateThemeStyles(domainConfig?: IDomainConfig): string {
+        const bgColor =
+            domainConfig?.theme?.bgColor ||
+            this.configService.get<string>('THEME_BG_COLOR') ||
+            '#161b23';
+        const accentLeft =
+            domainConfig?.theme?.accentLeftColor ||
+            this.configService.get<string>('THEME_ACCENT_LEFT_COLOR') ||
+            'violet';
+        const accentRight =
+            domainConfig?.theme?.accentRightColor ||
+            this.configService.get<string>('THEME_ACCENT_RIGHT_COLOR') ||
+            'cyan';
+
+        const leftRgb = colorToRgb(accentLeft);
+        const rightRgb = colorToRgb(accentRight);
+        const bgHex = bgColor.startsWith('#') ? bgColor : '#161b23';
+
+        return [
+            ':root{',
+            `--rwsp-bg:${bgColor};`,
+            `--rwsp-header-bg:${bgHex}cc;`,
+            `--rwsp-accent-l:rgba(${leftRgb},0.08);`,
+            `--rwsp-accent-r:rgba(${rightRgb},0.06)`,
+            '}',
+        ].join('');
+    }
+
+    private getThemePrimaryColor(domainConfig?: IDomainConfig): string {
+        const color =
+            domainConfig?.theme?.primaryColor ||
+            this.configService.get<string>('THEME_PRIMARY_COLOR') ||
+            'cyan';
+        return VALID_MANTINE_COLORS.has(color) ? color : 'cyan';
+    }
+
+    private generateThemeAccentValues(domainConfig?: IDomainConfig): { accentL: string; accentR: string } {
+        const accentLeft =
+            domainConfig?.theme?.accentLeftColor ||
+            this.configService.get<string>('THEME_ACCENT_LEFT_COLOR') ||
+            'violet';
+        const accentRight =
+            domainConfig?.theme?.accentRightColor ||
+            this.configService.get<string>('THEME_ACCENT_RIGHT_COLOR') ||
+            'cyan';
+        const leftRgb = colorToRgb(accentLeft);
+        const rightRgb = colorToRgb(accentRight);
+        return {
+            accentL: `rgba(${leftRgb},0.08)`,
+            accentR: `rgba(${rightRgb},0.06)`,
+        };
+    }
+
     private generateJwtForCookie(uuid: string | null): string {
         return this.jwtService.sign(
             {
@@ -207,8 +264,19 @@ export class RootService {
                 return;
             }
 
+            // Resolve per-domain config (if multi-domain mode is active)
+            const host = (req.headers['host'] as string | undefined)?.split(':')[0] ?? '';
+            const domainConfig = this.domainsConfigService.getForHost(host);
+
+            // If this domain maps to a specific panel config, use that UUID instead
+            const effectiveConfigUuid =
+                (domainConfig?.panelConfigName
+                    ? this.subpageConfigService.getConfigUuidByName(domainConfig.panelConfigName)
+                    : undefined) ?? subpageConfig.subpageConfigUuid;
+
             const baseSettings = this.subpageConfigService.getBaseSettings(
-                subpageConfig.subpageConfigUuid,
+                effectiveConfigUuid,
+                domainConfig,
             );
 
             const subscriptionData = subscriptionDataResponse.response;
@@ -218,16 +286,27 @@ export class RootService {
                 subscriptionData.response.ssConfLinks = {};
             }
 
-            res.cookie('session', this.generateJwtForCookie(subpageConfig.subpageConfigUuid), {
+            res.cookie('session', this.generateJwtForCookie(effectiveConfigUuid), {
                 httpOnly: true,
                 secure: true,
-                maxAge: 1_800_000, // 30 minutes
+                maxAge: 1_800_000,
             });
+
+            const { accentL, accentR } = this.generateThemeAccentValues(domainConfig);
+            const bgColor =
+                domainConfig?.theme?.bgColor ||
+                this.configService.get<string>('THEME_BG_COLOR') ||
+                '#161b23';
 
             res.render('index', {
                 metaTitle: baseSettings.metaTitle,
                 metaDescription: baseSettings.metaDescription,
                 panelData: Buffer.from(JSON.stringify(subscriptionData)).toString('base64'),
+                themeStyles: this.generateThemeStyles(domainConfig),
+                themePrimaryColor: this.getThemePrimaryColor(domainConfig),
+                themeBgColor: bgColor,
+                themeAccentL: accentL,
+                themeAccentR: accentR,
             });
         } catch (error) {
             this.logger.error(`Error in returnWebpage: ${error}`);

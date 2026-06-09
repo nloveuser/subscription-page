@@ -35,6 +35,26 @@ export const configSchema = z
             .refine((val) => val === 'true' || val === 'false', 'Must be "true" or "false".'),
         INTERNAL_JWT_SECRET: z.string(),
         EGAMES_COOKIE: z.optional(z.string()),
+
+        // Branding overrides (override panel config)
+        BRAND_NAME: z.optional(z.string()),
+        BRAND_SUPPORT_URL: z.optional(z.string()),
+        BRAND_LOGO_URL: z.optional(z.string()),
+        META_TITLE: z.optional(z.string()),
+        META_DESCRIPTION: z.optional(z.string()),
+
+        // Theme customization
+        THEME_PRIMARY_COLOR: z.string().default('cyan'),
+        THEME_BG_COLOR: z.string().default('#161b23'),
+        THEME_ACCENT_LEFT_COLOR: z.string().default('violet'),
+        THEME_ACCENT_RIGHT_COLOR: z.string().default('cyan'),
+
+        // Internal management API
+        INTERNAL_API_TOKEN: z.optional(z.string()),
+
+        // Go internal API URL for fetching multi-domain configs
+        // Example: http://rwsp-internal-api:3011
+        DOMAINS_API_URL: z.optional(z.string()),
     })
     .superRefine((data, ctx) => {
         if (

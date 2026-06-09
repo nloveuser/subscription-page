@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 
-import { Get, Controller, Res, Req, Param, Logger } from '@nestjs/common';
+import { Get, Post, Controller, Res, Req, Param, Logger, HttpCode } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import {
     REQUEST_TEMPLATE_TYPE_VALUES,
@@ -14,6 +15,7 @@ import { IJwtPayload } from '@common/constants';
 
 import { SubpageConfigService } from './subpage-config.service';
 import { RootService } from './root.service';
+// DomainsConfigService reload is triggered inside SubpageConfigService.reloadConfigs()
 
 @Controller()
 export class RootController {
@@ -22,11 +24,33 @@ export class RootController {
     constructor(
         private readonly rootService: RootService,
         private readonly subpageConfigService: SubpageConfigService,
+        private readonly configService: ConfigService,
     ) {}
 
     @Get(APP_CONFIG_ROUTE_WO_LEADING_PATH)
     async getSubscriptionPageConfig(@GetJWTPayload() user: IJwtPayload, @Req() request: Request) {
         return await this.subpageConfigService.getSubscriptionPageConfig(user.su, request);
+    }
+
+    @Post('internal/reload')
+    @HttpCode(200)
+    async reloadConfig(@Req() request: Request, @Res() response: Response) {
+        const expectedToken = this.configService.get<string>('INTERNAL_API_TOKEN');
+        const providedToken = request.headers['x-internal-token'];
+
+        if (expectedToken && providedToken !== expectedToken) {
+            response.status(401).json({ error: 'Unauthorized' });
+            return;
+        }
+
+        const result = await this.subpageConfigService.reloadConfigs();
+
+        if (!result.success) {
+            response.status(500).json({ error: result.error });
+            return;
+        }
+
+        response.status(200).json({ status: 'ok', message: 'Configs reloaded successfully' });
     }
 
     @Get([':shortUuid', ':shortUuid/:clientType'])

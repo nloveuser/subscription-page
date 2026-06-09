@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="ltr" data-primary-color="<%- themePrimaryColor %>">
     <head>
         <meta charset="UTF-8" />
         <meta name="robots" content="noindex, nofollow" />
         <meta name="color-scheme" content="dark only" />
-        <meta name="theme-color" content="#161B23" />
+        <meta name="theme-color" content="<%- themeBgColor %>" />
         <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
@@ -13,6 +13,15 @@
         <link rel="icon" sizes="32x32" type="image/png" href="/assets/favicon-32x32.png" />
         <link rel="icon" sizes="16x16" type="image/png" href="/assets/favicon-16x16.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180x180.png" />
+
+        <!-- Theme meta tags (server-injected) -->
+        <meta name="rwsp-theme-bg" content="<%- themeBgColor %>" />
+        <meta name="rwsp-theme-primary" content="<%- themePrimaryColor %>" />
+        <meta name="rwsp-theme-accent-l" content="<%- themeAccentL %>" />
+        <meta name="rwsp-theme-accent-r" content="<%- themeAccentR %>" />
+
+        <!-- Injected theme CSS variables -->
+        <style id="rwsp-theme-vars"><%- themeStyles %></style>
 
         <link rel="preconnect" crossorigin="anonymous" href="https://fonts.googleapis.com" />
         <link rel="preconnect" crossorigin="anonymous" href="https://fonts.gstatic.com" />

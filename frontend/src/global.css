@@ -1,7 +1,7 @@
 html,
 body {
     min-height: 100vh;
-    background-color: #161b23;
+    background-color: var(--rwsp-bg, #161b23);
     background-image:
         linear-gradient(to right, rgba(128, 128, 128, 0.05) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(128, 128, 128, 0.05) 1px, transparent 1px);
@@ -23,8 +23,8 @@ body {
     pointer-events: none;
     z-index: 0;
     background:
-        radial-gradient(ellipse 60% 40% at 25% 40%, rgba(151, 117, 250, 0.08), transparent 50%),
-        radial-gradient(ellipse 50% 50% at 85% 85%, rgba(34, 211, 238, 0.06), transparent 50%);
+        radial-gradient(ellipse 60% 40% at 25% 40%, var(--rwsp-accent-l, rgba(151, 117, 250, 0.08)), transparent 50%),
+        radial-gradient(ellipse 50% 50% at 85% 85%, var(--rwsp-accent-r, rgba(34, 211, 238, 0.06)), transparent 50%);
 }
 
 .header-wrapper {
@@ -33,7 +33,7 @@ body {
     z-index: 100;
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    background: rgba(22, 27, 35, 0.8);
+    background: var(--rwsp-header-bg, rgba(22, 27, 35, 0.8));
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
     @media (min-width: 768px) {

@@ -1,6 +1,17 @@
-import { createTheme } from '@mantine/core'
+import { createTheme, type MantineColor } from '@mantine/core'
 
 import components from './overrides'
+
+const VALID_MANTINE_COLORS = new Set([
+    'blue', 'cyan', 'dark', 'grape', 'gray', 'green',
+    'indigo', 'lime', 'orange', 'pink', 'red', 'teal', 'violet', 'yellow',
+])
+
+function getServerPrimaryColor(): MantineColor {
+    if (typeof document === 'undefined') return 'cyan'
+    const color = document.documentElement.dataset.primaryColor ?? ''
+    return VALID_MANTINE_COLORS.has(color) ? (color as MantineColor) : 'cyan'
+}
 
 export const theme = createTheme({
     components,
@@ -87,7 +98,7 @@ export const theme = createTheme({
         ]
     },
     primaryShade: 8,
-    primaryColor: 'cyan',
+    primaryColor: getServerPrimaryColor(),
     autoContrast: true,
     luminanceThreshold: 0.3,
     headings: {

@@ -1,3 +1,4 @@
+export * from './color-to-rgb';
 export * from './filter-logs';
 export * from './sanitize-username';
 export * from './sleep';

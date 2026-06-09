@@ -1,9 +1,90 @@
 services:
+  # ── MySQL ────────────────────────────────────────────────────────────────────
+  rwsp-mysql:
+    image: mysql:8.4
+    container_name: rwsp-mysql
+    hostname: rwsp-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-rwsp}
+      MYSQL_USER: ${MYSQL_USER:-rwsp}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - rwsp-mysql-data:/var/lib/mysql
+    networks:
+      - rwsp-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── NestJS subscription page ──────────────────────────────────────────────────
   remnawave-subscription-page:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: remnawave-subscription-page
+    hostname: remnawave-subscription-page
+    restart: unless-stopped
     env_file:
       - .env
+    environment:
+      DOMAINS_API_URL: http://rwsp-internal-api:3011
+    depends_on:
+      - rwsp-internal-api
+    networks:
+      - rwsp-network
+
+  # ── Go internal API ───────────────────────────────────────────────────────────
+  rwsp-internal-api:
+    build:
+      context: ./go-api
+      dockerfile: Dockerfile
+    container_name: rwsp-internal-api
+    hostname: rwsp-internal-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      BACKEND_URL: http://remnawave-subscription-page:3010
+      MYSQL_HOST: rwsp-mysql
+      ANGIE_CONTAINER: rwsp-angie
+      ANGIE_CONFD_DIR: /etc/angie/conf.d/domains
+    volumes:
+      - rwsp-angie-domains:/etc/angie/conf.d/domains
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      rwsp-mysql:
+        condition: service_healthy
+    networks:
+      - rwsp-network
+
+  # ── Angie (reverse proxy with native ACME/Let's Encrypt) ─────────────────────
+  rwsp-angie:
+    image: docker.angie.software/angie:1
+    container_name: rwsp-angie
+    hostname: rwsp-angie
+    restart: unless-stopped
     ports:
-      - '127.0.0.1:3010:3010'
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./angie.conf:/etc/angie/angie.conf:ro
+      - rwsp-angie-domains:/etc/angie/conf.d/domains
+      - rwsp-angie-acme:/var/lib/angie/acme
+    depends_on:
+      - remnawave-subscription-page
+    networks:
+      - rwsp-network
+
+networks:
+  rwsp-network:
+    driver: bridge
+
+volumes:
+  rwsp-mysql-data:
+  rwsp-angie-domains:
+  rwsp-angie-acme:
